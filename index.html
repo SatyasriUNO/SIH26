@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAADAXA · Team MANTHAN · SIH 2026</title>
+<meta name="description" content="SAADAXA: an autonomous search-and-rescue drone that finds survivors and hazards on board, and geo-tags them even without GPS or network.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E8EEEA;      /* survey-map paper */
+  --paper-2:#DCE4DF;
+  --card:#F6F9F7;
+  --ink:#14213D;        /* chart ink */
+  --ink-2:#44506B;
+  --line:#B9C6BF;
+  --grid:#CFD9D3;
+  --signal:#E8491D;     /* hi-vis rescue orange = survivors */
+  --hazard:#9E2A3A;     /* hazard zones */
+  --safe:#1F8A70;       /* safe routes */
+  --path:#2D5BA8;       /* flight path */
+  --on-signal:#FFFFFF;
+  --radius-s:4px; --radius-m:10px;
+  --maxw:1180px;
+  --font:"Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1A26; --paper-2:#152333; --card:#182A3C;
+    --ink:#E6EDF3; --ink-2:#A9B7C6; --line:#2E4458; --grid:#1D3144;
+    --signal:#FF6A3D; --hazard:#E0667A; --safe:#3CC49E; --path:#7EA6F0;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1A26; --paper-2:#152333; --card:#182A3C;
+  --ink:#E6EDF3; --ink-2:#A9B7C6; --line:#2E4458; --grid:#1D3144;
+  --signal:#FF6A3D; --hazard:#E0667A; --safe:#3CC49E; --path:#7EA6F0;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:48px 48px;background-attachment:fixed}
+img,svg{max-width:100%}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:2px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{font-weight:800;font-stretch:112%;font-size:20px;letter-spacing:.02em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 4px color-mix(in srgb,var(--signal) 25%,transparent)}
+nav.links{margin-left:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav.links::-webkit-scrollbar{display:none}
+nav.links a{text-decoration:none;font-size:15px;color:var(--ink-2);padding:8px 10px;border-radius:var(--radius-s);white-space:nowrap}
+nav.links a:hover{color:var(--ink);background:var(--paper-2)}
+.theme-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:var(--radius-s);
+  font:inherit;font-size:14px;padding:6px 10px;cursor:pointer;flex:none}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center}
+.kicker{font-size:15px;color:var(--ink-2);margin:0 0 14px}
+.kicker b{color:var(--ink)}
+h1{font-size:clamp(40px,6.2vw,76px);line-height:.95;margin:0 0 20px;font-weight:800;font-stretch:118%;letter-spacing:-.01em}
+.hero p.lede{font-size:clamp(18px,2vw,21px);max-width:34ch;margin:0 0 28px;color:var(--ink)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:650;font-size:16px;padding:12px 18px;border-radius:var(--radius-s)}
+.btn.primary{background:var(--signal);color:var(--on-signal)}
+.btn.ghost{border:1.5px solid var(--ink);color:var(--ink)}
+.btn:hover{filter:brightness(1.06)}
+.map{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-m);padding:14px;position:relative}
+.map svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13.5px;color:var(--ink-2);margin:10px 4px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:3px;display:inline-block}
+.map-status{position:absolute;top:24px;left:24px;background:var(--paper);border:1px solid var(--line);
+  font-size:13px;padding:5px 9px;border-radius:var(--radius-s);color:var(--ink-2)}
+.map-status b{color:var(--ink)}
+
+/* path animation */
+.flight{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:trace 7s ease-in-out .4s forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.pin{opacity:0;transform-box:fill-box;transform-origin:50% 100%;animation:drop .5s ease-out forwards}
+.zone{opacity:0;animation:fade .8s ease-out forwards}
+.route{stroke-dasharray:6 6;opacity:0;animation:fade .8s ease-out forwards}
+@keyframes drop{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes fade{to{opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  .flight{animation:none;stroke-dashoffset:0}
+  .pin,.zone,.route{animation:none;opacity:1}
+}
+
+/* ---------- sections ---------- */
+section{padding:64px 0}
+section + section{border-top:1px solid var(--line)}
+h2{font-size:clamp(28px,3.6vw,40px);line-height:1.05;margin:0 0 10px;font-weight:780;font-stretch:108%}
+.sub{color:var(--ink-2);max-width:62ch;margin:0 0 32px}
+
+/* coverage table */
+.coverage{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-m);overflow:hidden}
+.table-scroll{overflow-x:auto;border-radius:var(--radius-m)}
+.coverage th,.coverage td{text-align:left;padding:14px 16px;vertical-align:top;border-bottom:1px solid var(--line)}
+.coverage tr:last-child td{border-bottom:0}
+.coverage th{font-size:14px;font-weight:650;color:var(--ink-2);background:var(--paper-2)}
+.coverage td:first-child{font-weight:650;width:26%}
+.coverage td:nth-child(2){color:var(--ink-2)}
+.tag{display:inline-block;font-size:13px;font-weight:650;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.core{background:color-mix(in srgb,var(--safe) 16%,transparent);color:var(--safe)}
+.tag.added{background:color-mix(in srgb,var(--signal) 16%,transparent);color:var(--signal)}
+
+/* mission steps (a real sequence, so numbered) */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  border:1px solid var(--line);border-radius:var(--radius-m);background:var(--card);overflow:hidden}
+.steps li{padding:22px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);position:relative}
+.steps .n{font-size:44px;font-weight:800;font-stretch:70%;line-height:1;color:var(--path)}
+.steps h3{margin:10px 0 6px;font-size:18px}
+.steps p{margin:0;color:var(--ink-2);font-size:15.5px}
+
+/* extras */
+.extras{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.extras li{list-style:none;border:1.5px dashed var(--line);padding:8px 12px;border-radius:var(--radius-s);font-size:15px;background:var(--card)}
+.extras{padding:0}
+
+/* tech spec sheet */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px 40px}
+.spec dl{margin:0}
+.spec h3{font-size:19px;margin:0 0 8px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.spec .row{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15.5px}
+.spec dt{color:var(--ink-2)}
+.spec dd{margin:0}
+.honest{margin-top:28px;background:var(--card);border:1px solid var(--line);border-left-width:1px;border-radius:var(--radius-m);padding:18px 20px}
+.honest h3{margin:0 0 8px;font-size:18px}
+.honest ul{margin:0;padding-left:20px;color:var(--ink-2)}
+
+/* research */
+.papers{display:grid;gap:12px}
+.paper{display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:start;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-m);padding:16px 18px}
+.paper .t{font-weight:650;font-size:17px;line-height:1.35}
+.paper .v{color:var(--ink-2);font-size:15px;grid-column:1}
+.status{font-size:13px;font-weight:650;padding:4px 9px;border-radius:999px;border:1.5px solid currentColor;white-space:nowrap}
+.status.accepted{color:var(--safe)}
+.status.review{color:var(--path)}
+.status.submitted{color:var(--ink-2)}
+.patent{margin-top:20px;padding:18px 20px;border-radius:var(--radius-m);background:var(--ink);color:var(--paper)}
+.patent b{color:var(--paper)}
+.patent p{margin:4px 0 0;opacity:.85}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.member{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-m);padding:18px}
+.avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;
+  background:var(--paper-2);color:var(--ink);border:2px solid var(--path);margin-bottom:12px}
+.member .nm{font-weight:700}
+.member .rl{color:var(--ink-2);font-size:15px}
+
+/* log */
+.log{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.log li{position:relative;padding:0 0 22px 22px}
+.log li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--path)}
+.log time{font-size:14px;color:var(--ink-2);display:block}
+.log h3{margin:2px 0 4px;font-size:17px}
+.log p{margin:0;color:var(--ink-2);font-size:15.5px}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.gallery figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-m);overflow:hidden}
+.gallery img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.gallery figcaption{padding:10px 12px;font-size:14.5px;color:var(--ink-2)}
+.empty{grid-column:1/-1;border:1.5px dashed var(--line);border-radius:var(--radius-m);padding:28px;color:var(--ink-2);background:var(--card)}
+
+footer{padding:40px 0 56px;border-top:1px solid var(--line);color:var(--ink-2);font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between}
+
+@media (max-width:900px){
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .hero .wrap{grid-template-columns:1fr;gap:32px}
+  .coverage td:first-child{width:auto}
+  nav.links{display:none}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  section{padding:48px 0}
+  .spec .row{grid-template-columns:1fr;gap:2px}
+  .paper{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span><span id="brandName">SAADAXA</span></a>
+    <nav class="links" aria-label="Sections">
+      <a href="#coverage">Problem fit</a>
+      <a href="#mission">How it works</a>
+      <a href="#tech">Technology</a>
+      <a href="#research">Research</a>
+      <a href="#team">Team</a>
+      <a href="#updates">Updates</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme">Dark mode</button>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="wrap">
+      <div>
+        <p class="kicker" id="heroKicker"></p>
+        <h1 id="heroTitle"></h1>
+        <p class="lede" id="heroLede"></p>
+        <div class="cta-row">
+          <a class="btn primary" href="#mission">See how a mission runs</a>
+          <a class="btn ghost" href="#research">Read our research</a>
+        </div>
+      </div>
+
+      <div class="map" role="img" aria-label="Illustration of a drone search: a lawn-mower flight path over a search area, survivor pins, a hazard zone, and a safe route around it.">
+        <div class="map-status" id="mapStatus">GPS: <b>lost</b> · position from anchored SLAM</div>
+        <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- contour lines -->
+          <g fill="none" stroke="var(--grid)" stroke-width="1.2">
+            <path d="M-10 330 C 80 300, 160 350, 260 320 S 460 280, 580 310"/>
+            <path d="M-10 270 C 90 250, 170 290, 270 262 S 470 220, 580 250"/>
+            <path d="M-10 90 C 120 120, 220 70, 330 100 S 480 140, 580 110"/>
+            <path d="M-10 40 C 110 70, 230 20, 340 50 S 490 90, 580 60"/>
+          </g>
+          <!-- search area -->
+          <polygon points="60,60 500,48 520,340 70,352" fill="color-mix(in srgb, var(--path) 7%, transparent)" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <!-- hazard zone -->
+          <polygon class="zone" style="animation-delay:4.2s" points="300,170 380,150 410,215 350,250 290,225" fill="color-mix(in srgb, var(--hazard) 22%, transparent)" stroke="var(--hazard)" stroke-width="2"/>
+          <!-- flight path (lawn-mower strips) -->
+          <path class="flight" id="flightPath" fill="none" stroke="var(--path)" stroke-width="2.5" stroke-linejoin="round"
+            d="M80 80 L490 80 L490 130 L80 130 L80 180 L490 180 L490 230 L80 230 L80 280 L490 280 L490 325 L80 325"/>
+          <!-- safe route -->
+          <path class="route" style="animation-delay:6.6s" fill="none" stroke="var(--safe)" stroke-width="3" d="M30 380 L150 300 L250 285 L440 290"/>
+          <circle cx="30" cy="380" r="6" fill="var(--safe)"/>
+          <!-- survivor pins -->
+          <g fill="var(--signal)">
+            <g class="pin" style="animation-delay:2.0s"><path d="M180 128 c-9 0-15 7-15 15 c0 11 15 25 15 25 s15-14 15-25 c0-8-6-15-15-15z" transform="translate(0,-40)"/><circle cx="180" cy="103" r="5" fill="var(--card)"/></g>
+            <g class="pin" style="animation-delay:3.6s"><path d="M430 178 c-9 0-15 7-15 15 c0 11 15 25 15 25 s15-14 15-25 c0-8-6-15-15-15z" transform="translate(0,-40)"/><circle cx="430" cy="153" r="5" fill="var(--card)"/></g>
+            <g class="pin" style="animation-delay:5.6s"><path d="M440 290 c-9 0-15 7-15 15 c0 11 15 25 15 25 s15-14 15-25 c0-8-6-15-15-15z" transform="translate(0,-40)"/><circle cx="440" cy="265" r="5" fill="var(--card)"/></g>
+          </g>
+        </svg>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--path)"></i>Flight path</span>
+          <span><i class="sw" style="background:var(--signal)"></i>Survivor</span>
+          <span><i class="sw" style="background:var(--hazard)"></i>Hazard zone</span>
+          <span><i class="sw" style="background:var(--safe)"></i>Safe route</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COVERAGE -->
+  <section id="coverage" aria-labelledby="covTitle">
+    <div class="wrap">
+      <h2 id="covTitle">What the problem asks for, and how we answer it</h2>
+      <p class="sub" id="psLine"></p>
+      <div class="table-scroll">
+        <table class="coverage">
+          <thead><tr><th scope="col">Requirement</th><th scope="col">How SAADAXA does it</th><th scope="col">Status</th></tr></thead>
+          <tbody id="coverageBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section id="mission" aria-labelledby="misTitle">
+    <div class="wrap">
+      <h2 id="misTitle">How a mission runs</h2>
+      <p class="sub">From drawing the search area to the final report, every step below runs on the drone or a field laptop. No internet is needed.</p>
+      <ol class="steps" id="stepsList"></ol>
+      <h3 style="margin:36px 0 0;font-size:19px">Also on board</h3>
+      <ul class="extras" id="extrasList"></ul>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section id="tech" aria-labelledby="techTitle">
+    <div class="wrap">
+      <h2 id="techTitle">Technology</h2>
+      <p class="sub">Built from off-the-shelf parts so every block can be sourced, tested and replaced on its own.</p>
+      <div class="spec" id="specGrid"></div>
+      <div class="honest">
+        <h3>Limits we design around</h3>
+        <ul id="limitsList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH -->
+  <section id="research" aria-labelledby="resTitle">
+    <div class="wrap">
+      <h2 id="resTitle">Research and publications</h2>
+      <p class="sub">Peer-reviewed work written on the SAADAXA platform.</p>
+      <div class="papers" id="papersList"></div>
+      <div class="patent" id="patentBox"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" aria-labelledby="galTitle">
+    <div class="wrap">
+      <h2 id="galTitle">Build and test photos</h2>
+      <p class="sub">Airframe, bench tests and field trials.</p>
+      <div class="gallery" id="galleryGrid"></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team" aria-labelledby="teamTitle">
+    <div class="wrap">
+      <h2 id="teamTitle">Team</h2>
+      <p class="sub" id="teamLine"></p>
+      <div class="team" id="teamGrid"></div>
+    </div>
+  </section>
+
+  <!-- UPDATES -->
+  <section id="updates" aria-labelledby="updTitle">
+    <div class="wrap">
+      <h2 id="updTitle">Updates</h2>
+      <p class="sub">Milestones, competitions and results, newest first.</p>
+      <ol class="log" id="logList"></ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span id="footLeft"></span>
+    <span id="footRight"></span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   CONTENT: edit everything on the site from this one block.
+   - Add a paper: copy one object inside `papers`.
+   - status can be: "accepted", "review", "submitted", or "" (hidden).
+   - Add a photo: put the image file next to index.html and add
+     { src: "photo1.jpg", caption: "..." } to `gallery`.
+   - Add an update: add an object at the TOP of `updates`.
+   ===================================================================== */
+const CONTENT = {
+  project: "SAADAXA",
+  fullName: "Six-Armed Aerial Disaster Assistance EXpeditionary Apparatus",
+  team: "MANTHAN",
+  event: "Smart India Hackathon 2026",
+  psId: "SIH26177",
+  psTitle: "A deployable AI-powered autonomous drone that aids search-and-rescue operations by detecting people and hazards, thereby improving responder safety and reducing victim discovery time.",
+  psOrg: "Qualcomm Inc",
+  institute: "Cambridge Institute of Technology, Bengaluru",
+  headline: "Find them. Pin them. Even with no GPS.",
+  lede: "An autonomous hexacopter that spots survivors and hazards on board, and turns each one into a map pin with real coordinates, even when GPS and cell towers are down.",
+
+  coverage: [
+    { req: "Autonomous navigation (GPS and GPS-denied)", how: "RTK GNSS when the sky is clear. When GPS drops, visual-inertial SLAM (ORB-SLAM3 + depth camera) is anchored to the last good GPS fix, so the drone keeps real latitude and longitude.", status: "core" },
+    { req: "On-device AI inference", how: "YOLOv8-nano, INT8, running on the drone's own computer at about 15 frames per second. Nothing is sent to the cloud.", status: "core" },
+    { req: "Multi-sensor fusion", how: "An RGB detection only counts as a survivor if the thermal camera also sees a warm body (at least 5 °C above the ground). IMU, optical flow, GPS and SLAM are fused in the flight controller.", status: "core" },
+    { req: "Hazard classification", how: "A second detector flags fire and smoke, floodwater, damaged structures, exposed power lines, debris and landslides.", status: "added" },
+    { req: "Geo-tagged live mapping", how: "Survivor pins, hazard zones and a safe access route for rescue teams, all on one live map.", status: "core" },
+    { req: "Emergency alerting", how: "Each survivor gets a priority score from detection confidence, nearby hazards and group size. The rescue list is ranked automatically.", status: "added" },
+    { req: "Offline resilience", how: "Video and voice travel over Wi-Fi or 5G. If the signal drops below −75 dBm, the drone switches to LoRa and sends only 240-byte coordinate packets through a directional Vivaldi antenna.", status: "core" },
+    { req: "Command center dashboard", how: "Web dashboard and Android app showing live feeds, pins, hazard markers and mission status. A situational report is generated at mission end.", status: "core" }
+  ],
+
+  steps: [
+    { title: "Draw the search area", text: "The operator outlines the zone on the app or dashboard." },
+    { title: "Plan the strips", text: "Parallel strips at 30 m height, 40 m apart, with about 30 % overlap so nothing is missed." },
+    { title: "Fly and scan", text: "RGB, thermal and depth cameras run on every frame." },
+    { title: "Detect and confirm", text: "On a find, the drone hovers for 10 seconds to confirm it and refine the position." },
+    { title: "Locate", text: "Coordinates come from GPS, or from anchored SLAM when GPS is lost." },
+    { title: "Send", text: "Full data over Wi-Fi or 5G; coordinates only over LoRa when that link fails." },
+    { title: "Map and rank", text: "The server merges duplicate sightings, draws hazard zones, plans safe routes and ranks survivors." },
+    { title: "Report", text: "A situational report is produced when the mission ends." }
+  ],
+
+  extras: [
+    "Two-way voice with trapped survivors",
+    "Autonomous safe-landing check",
+    "Return home if a motor fails",
+    "Drone-to-drone relay",
+    "Hazard reports from local people",
+    "Payload drop"
+  ],
+
+  spec: [
+    { group: "Airframe and power", rows: [
+      ["Frame", "Hexacopter"],
+      ["Motors", "6 × 650 KV BLDC, 30 A BLHeli32 ESCs"],
+      ["Battery", "6S 10 Ah LiPo (222 Wh)"],
+      ["Endurance", "22–26 minutes"],
+      ["Flight control", "Pixhawk 2.4.8, ArduCopter EKF3"]
+    ]},
+    { group: "Sensing and AI", rows: [
+      ["Depth camera", "Intel RealSense D435i (RGB-D + IMU)"],
+      ["Thermal", "FLIR thermal camera"],
+      ["Positioning", "RTK GNSS (u-blox F9P), Hereflow optical flow"],
+      ["Computer", "Raspberry Pi 5, 8 GB"],
+      ["Detection", "YOLOv8-nano INT8 via NCNN, ~15 FPS"]
+    ]},
+    { group: "Links and software", rows: [
+      ["Primary link", "Wi-Fi / 5G for video and voice"],
+      ["Backup link", "RYLR998 LoRa, 865 MHz, Vivaldi antenna"],
+      ["Navigation", "ORB-SLAM3 with GPS-anchored ENU frame"],
+      ["Server", "FastAPI, WebSocket hub, MAVLink bridge"],
+      ["Apps", "Web dashboard, Kotlin Android app"]
+    ]}
+  ],
+
+  limits: [
+    "Without GPS, SLAM drift grows at about 1.2–1.6 % of distance flown. It resets as soon as GPS returns.",
+    "Real LoRa range in broken terrain is about 1–3 km, not the 8–10 km quoted for open fields.",
+    "LoRa carries coordinates and telemetry only; video over LoRa is not physically possible.",
+    "In hot weather the ground can approach body temperature, so thermal alone never confirms a survivor."
+  ],
+
+  papers: [
+    { title: "Power Architecture and Energy Budget Management for a Hexacopter-Based Autonomous Disaster-Response Platform", venue: "IEEE PEDES 2026, IIT Guwahati", status: "" },
+    { title: "Edge-AI-Driven Adaptive Power and Thermal Load Management on a Compute Stack for Autonomous Aerial Systems", venue: "IEEE PEDES 2026, IIT Guwahati", status: "" },
+    { title: "Multi-Channel BLDC Drive Topology and Fault-Tolerant Power Architecture for a Low-Cost Autonomous Hexacopter Platform", venue: "IEEE IICPE 2026, NIT Uttarakhand and MANIT Bhopal", status: "" },
+    { title: "Intelligent Adaptive Power Control and Fault-Response Architecture for an Edge-AI Compute Stack on an Autonomous Aerial Platform", venue: "IEEE UPCON 2026, IIT Kanpur", status: "" },
+    { title: "Directional Gain Enhancement of a Sub-GHz LoRa Link Using a Vivaldi Tapered-Slot Antenna for Infrastructure-Denied UAV Operations", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "" },
+    { title: "Autonomous Dual-Channel Communication with GPS-Anchored SLAM/ENU Coordinate Recovery for Infrastructure-Denied Environments", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "" }
+  ],
+
+  patent: {
+    title: "Autonomous Aerial Disaster Assistance and Location Tracking System and Its Method",
+    note: "Indian patent application",   // e.g. "Indian patent application No. 2026XXXXXXXX, filed March 2026"
+  },
+
+  gallery: [
+    // { src: "cad.png", caption: "CAD model of the hexacopter" }
+  ],
+
+  members: [
+    { name: "Shreya Upadhyay", role: "" },
+    { name: "Gouri Vast", role: "" },
+    { name: "Archisman Rana", role: "" },
+    { name: "Sankarshan V Sastry", role: "" }
+    // { name: "Your name", role: "Team lead" }
+  ],
+
+  updates: [
+    { date: "2026-09-30", title: "SIH 2026 idea submitted", text: "Idea PPT for problem statement SIH26177 prepared for the portal." }
+  ]
+};
+
+/* =====================================================================
+   RENDERING: no need to edit below this line.
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const initials = (n) => n.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+
+function render(c) {
+  $("brandName").textContent = c.project;
+  $("heroKicker").innerHTML = `<b>Team ${esc(c.team)}</b> · ${esc(c.event)} · ${esc(c.psId)}`;
+  $("heroTitle").textContent = c.headline;
+  $("heroLede").textContent = c.lede;
+  $("psLine").textContent = `${c.psId}, set by ${c.psOrg}: ${c.psTitle}`;
+
+  $("coverageBody").innerHTML = c.coverage.map(r => `
+    <tr><td>${esc(r.req)}</td><td>${esc(r.how)}</td>
+    <td><span class="tag ${r.status === "added" ? "added" : "core"}">${r.status === "added" ? "Added for 2026" : "In our design"}</span></td></tr>`).join("");
+
+  $("stepsList").innerHTML = c.steps.map((s, i) => `
+    <li><div class="n">${i + 1}</div><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p></li>`).join("");
+
+  $("extrasList").innerHTML = c.extras.map(e => `<li>${esc(e)}</li>`).join("");
+
+  $("specGrid").innerHTML = c.spec.map(g => `
+    <div><h3>${esc(g.group)}</h3><dl>${g.rows.map(([k, v]) =>
+      `<div class="row"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></div>`).join("");
+
+  $("limitsList").innerHTML = c.limits.map(l => `<li>${esc(l)}</li>`).join("");
+
+  const statusLabel = { accepted: "Accepted", review: "Under review", submitted: "Submitted" };
+  $("papersList").innerHTML = c.papers.map(p => `
+    <article class="paper">
+      <div class="t">${esc(p.title)}</div>
+      ${statusLabel[p.status] ? `<span class="status ${p.status}">${statusLabel[p.status]}</span>` : "<span></span>"}
+      <div class="v">${esc(p.venue)}</div>
+    </article>`).join("");
+
+  $("patentBox").innerHTML = `<b>Patent:</b> ${esc(c.patent.title)}<p>${esc(c.patent.note)}</p>`;
+
+  $("galleryGrid").innerHTML = c.gallery.length
+    ? c.gallery.map(g => `<figure><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"><figcaption>${esc(g.caption)}</figcaption></figure>`).join("")
+    : `<div class="empty">No photos yet. Add images to the <code>gallery</code> list in the content block to show them here.</div>`;
+
+  $("teamLine").textContent = `Team ${c.team}, ${c.institute}.`;
+  $("teamGrid").innerHTML = c.members.map(m => `
+    <div class="member"><div class="avatar" aria-hidden="true">${esc(initials(m.name))}</div>
+    <div class="nm">${esc(m.name)}</div>${m.role ? `<div class="rl">${esc(m.role)}</div>` : ""}</div>`).join("");
+
+  $("logList").innerHTML = c.updates.map(u => `
+    <li><time datetime="${esc(u.date)}">${new Date(u.date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</time>
+    <h3>${esc(u.title)}</h3>${u.text ? `<p>${esc(u.text)}</p>` : ""}</li>`).join("");
+
+  $("footLeft").textContent = `${c.project}: ${c.fullName}`;
+  $("footRight").textContent = `Team ${c.team} · ${c.event}`;
+}
+render(CONTENT);
+
+/* flight-path length for the draw animation */
+(() => {
+  const p = $("flightPath");
+  if (p) p.style.setProperty("--len", Math.ceil(p.getTotalLength()));
+})();
+
+/* theme toggle (remembered per browser) */
+(() => {
+  const root = document.documentElement, btn = $("themeBtn");
+  const sysDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const current = () => root.dataset.theme || (sysDark() ? "dark" : "light");
+  const label = () => { btn.textContent = current() === "dark" ? "Light mode" : "Dark mode"; };
+  try { const saved = localStorage.getItem("saadaxa-theme"); if (saved) root.dataset.theme = saved; } catch (e) {}
+  label();
+  btn.addEventListener("click", () => {
+    root.dataset.theme = current() === "dark" ? "light" : "dark";
+    try { localStorage.setItem("saadaxa-theme", root.dataset.theme); } catch (e) {}
+    label();
+  });
+})();
+</script>
+</body>
+</html>
