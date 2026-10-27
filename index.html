@@ -480,6 +480,13 @@ const CONTENT = {
   ],
 
   papers: [
+    { title: "GPS-Anchored SLAM/ENU Coordinate Recovery and Directional LoRa Telemetry for Infrastructure-Denied Disaster UAV Operations", venue: "IEEE AGERS 2026, IEEE Indonesia Section", venueLink: "https://r10.ieee.org/indonesia-grsaes/agers-2026/", status: "submitted", link: "" },
+    { title: "SAADAXA: Edge-AI Disaster Response Using GPS-Anchored SLAM and Dual-Channel Communication", venue: "NCC 2027, IISc Bengaluru", venueLink: "https://ece.iisc.ac.in/~ncc2027/index.html", status: "submitted", link: "" },
+    { title: "A Hardware-Centric Offline UAV for Disaster Assistance: Hexacopter Propulsion, Multi-Sensor Navigation, and LoRa-Based Telemetry", venue: "NCC 2027, IISc Bengaluru", venueLink: "https://ece.iisc.ac.in/~ncc2027/index.html", status: "submitted", link: "" },
+    { title: "Edge-AI Compute Load and Thermal Behaviour in an Autonomous UAV as a Cyber-Physical System Node: Workload Scheduling as a Design Variable", venue: "ICITIIT 2027, IIIT Kottayam", venueLink: "https://icitiit27.iiitkottayam.ac.in/", status: "submitted", link: "" },
+    { title: "GPS-Anchored SLAM/ENU Localization and Dual-Channel Communication for Autonomous UAV Networks", venue: "ICITIIT 2027, IIIT Kottayam", venueLink: "https://icitiit27.iiitkottayam.ac.in/", status: "submitted", link: "" },
+    { title: "Power Architecture and Energy Budget Management for an Autonomous Hexacopter Deployed in IoT-Enabled Robotics and Disaster-Response Applications", venue: "NICEDT 2027, NIELIT", venueLink: "https://www.nielit.gov.in/", status: "submitted", link: "" },
+    { title: "Intelligent Adaptive Power Control and Fault-Response Architecture for an Edge-AI Compute Stack Deployed as an IoT-Enabled Autonomous Aerial Platform", venue: "NICEDT 2027, NIELIT", venueLink: "https://www.nielit.gov.in/", status: "submitted", link: "" },
     { title: "Power Architecture and Energy Budget Management for a Hexacopter-Based Autonomous Disaster-Response Platform", venue: "IEEE PEDES 2026, IIT Guwahati", status: "", link: "" },
     { title: "Edge-AI-Driven Adaptive Power and Thermal Load Management on a Compute Stack for Autonomous Aerial Systems", venue: "IEEE PEDES 2026, IIT Guwahati", status: "", link: "" },
     { title: "Multi-Channel BLDC Drive Topology and Fault-Tolerant Power Architecture for a Low-Cost Autonomous Hexacopter Platform", venue: "IEEE IICPE 2026, NIT Uttarakhand and MANIT Bhopal", status: "", link: "" },
@@ -490,18 +497,18 @@ const CONTENT = {
 
   patent: {
     title: "Autonomous Aerial Disaster Assistance and Location Tracking System and Its Method",
-    note: "Indian patent application No. 202641122095, filed October 12, 2026",   // e.g. "Indian patent application No. 202641122095, filed October 12, 2026"
+    note: "Indian patent application",   // e.g. "Indian patent application No. 2026XXXXXXXX, filed March 2026"
   },
 
   /* ACHIEVEMENTS: newest first. Replace each title/text with what the post is about.
      date format: "YYYY-MM-DD" (leave "" if unsure). link: the post URL. */
   achievements: [
-    { date: "", title: "Achievement 1 --> 1st Place — National-Level Ideathon 2026", text: "", link: "https://lnkd.in/p/gd5EZnJY" },
-    { date: "", title: "Achievement 2 --> 3rd Prize — DRaaS Disaster Response Hackathon", text: "", link: "https://lnkd.in/p/gNAvbE7g" },
-    { date: "", title: "Achievement 3 --> Best Paper Presentation — NCAIMLBT 2026", text: "", link: "https://lnkd.in/p/gNNGHHQM" },
-    { date: "", title: "Achievement 4 --> R&D Project Showcase — Bengaluru Tech Summit 2025", text: "", link: "https://lnkd.in/p/gzhRAVpV" },
-    { date: "", title: "Achievement 5 --> 2nd Place — Wireless Communication Hackathon", text: "", link: "https://lnkd.in/p/g77cvzw5" },
-    { date: "", title: "Achievement 6 --> State-Level Ideathon Winner — Disaster Response Innovation", text: "", link: "https://lnkd.in/p/g5EziTig" }
+    { date: "", title: "Achievement 1 (add title)", text: "", link: "https://lnkd.in/p/gd5EZnJY" },
+    { date: "", title: "Achievement 2 (add title)", text: "", link: "https://lnkd.in/p/gNAvbE7g" },
+    { date: "", title: "Achievement 3 (add title)", text: "", link: "https://lnkd.in/p/gNNGHHQM" },
+    { date: "", title: "Achievement 4 (add title)", text: "", link: "https://lnkd.in/p/gzhRAVpV" },
+    { date: "", title: "Achievement 5 (add title)", text: "", link: "https://lnkd.in/p/g77cvzw5" },
+    { date: "", title: "Achievement 6 (add title)", text: "", link: "https://lnkd.in/p/g5EziTig" }
   ],
 
   /* GALLERY: photos and videos are loaded automatically from media/gallery.json
@@ -561,7 +568,7 @@ function render(c) {
     <article class="paper">
       <div class="t">${esc(p.title)}</div>
       ${statusLabel[p.status] ? `<span class="status ${p.status}">${statusLabel[p.status]}</span>` : "<span></span>"}
-      <div class="v">${esc(p.venue)}</div>
+      <div class="v">${p.venueLink ? `<a href="${esc(p.venueLink)}" target="_blank" rel="noopener">${esc(p.venue)}</a>` : esc(p.venue)}</div>
       ${p.link ? `<a class="pl" href="${esc(p.link)}" target="_blank" rel="noopener">Read paper ↗</a>` : ""}
     </article>`).join("");
 
