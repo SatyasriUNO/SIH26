@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SAADAXA · Team MANTHAN · SIH 2026</title>
+<title>SAADAXA — Rescue Intelligence</title>
 <meta name="description" content="SAADAXA: an autonomous search-and-rescue drone that finds survivors and hazards on board, and geo-tags them even without GPS or network.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#E8EEEA;      /* survey-map paper */
@@ -179,6 +179,25 @@ h2{font-size:clamp(28px,3.6vw,40px);line-height:1.05;margin:0 0 10px;font-weight
 .gallery figcaption{padding:10px 12px;font-size:14.5px;color:var(--ink-2)}
 .empty{grid-column:1/-1;border:1.5px dashed var(--line);border-radius:var(--radius-m);padding:28px;color:var(--ink-2);background:var(--card)}
 
+/* achievements */
+.ach-list{display:grid;gap:12px}
+.ach{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-m);padding:16px 18px;text-decoration:none;transition:border-color .15s}
+.ach:hover{border-color:var(--signal)}
+.ach time{font-size:13.5px;color:var(--ink-2);display:block;margin-bottom:2px}
+.ach .at{font-weight:650;font-size:17px;line-height:1.35}
+.ach .ad{color:var(--ink-2);font-size:15px;margin-top:2px}
+.ach .go{font-size:14px;font-weight:650;color:var(--signal);white-space:nowrap}
+.paper .pl{grid-column:1;font-size:14.5px;font-weight:650;color:var(--signal);text-decoration:none}
+.paper .pl:hover{text-decoration:underline}
+/* gallery media */
+.gallery video{display:block;width:100%;aspect-ratio:16/9;background:#000;object-fit:contain}
+.gallery iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.gallery a.img-link{display:block}
+.gallery{align-items:start}
+.gallery figure.is-video{grid-column:span 2}
+@media (max-width:560px){.ach{grid-template-columns:1fr;gap:6px}.gallery figure.is-video{grid-column:auto}}
+
 footer{padding:40px 0 56px;border-top:1px solid var(--line);color:var(--ink-2);font-size:15px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between}
 
@@ -195,6 +214,23 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   .paper{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr}
 }
+
+/* In-page Mission Control switch + entrance transition */
+.btn.mission-launch{position:relative;gap:10px;overflow:hidden;background:#14213D;color:#F7FBFF;border:1px solid #14213D;box-shadow:0 10px 28px rgba(20,33,61,.16);padding-right:16px}
+.btn.mission-launch::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.12) 50%,transparent 70%);transform:translateX(-110%);transition:transform .55s ease}
+.btn.mission-launch:hover::after{transform:translateX(110%)}
+.launch-orb{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#62E0B9;color:#0A1220;font-size:17px;font-weight:800}
+.launch-caption{font-size:9px;letter-spacing:.12em;font-weight:800;border:1px solid rgba(255,255,255,.24);border-radius:3px;padding:3px 5px;color:#A8F3DC}
+#missionControlLink{color:var(--signal);font-weight:750}
+#missionControlLink span{font-size:12px}
+body.mission-mode{overflow:hidden;background:#0A1220}
+body.mission-mode>header.top,body.mission-mode>main,body.mission-mode>footer{display:none!important}
+saadaxa-mission-control{display:none!important}
+body.mission-mode saadaxa-mission-control{display:block!important;position:fixed;inset:0;z-index:9999;overflow:auto;max-width:none;animation:mission-enter .34s cubic-bezier(.2,.75,.2,1) both}
+@keyframes mission-enter{from{opacity:0;transform:translateY(8px) scale(.995)}to{opacity:1;transform:none}}
+@media(max-width:720px){.launch-caption{display:none}.btn.mission-launch{flex:1}}
+@media(prefers-reduced-motion:reduce){body.mission-mode saadaxa-mission-control{animation:none}.btn.mission-launch::after{display:none}}
+
 </style>
 </head>
 <body>
@@ -208,7 +244,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
       <a href="#tech">Technology</a>
       <a href="#research">Research</a>
       <a href="#team">Team</a>
+      <a href="#achievements">Achievements</a>
+      <a href="#gallery">Gallery</a>
       <a href="#updates">Updates</a>
+      <a href="#mission-control" id="missionControlLink">Mission Control <span aria-hidden="true">↗</span></a>
     </nav>
     <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme">Dark mode</button>
   </div>
@@ -223,6 +262,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
         <h1 id="heroTitle"></h1>
         <p class="lede" id="heroLede"></p>
         <div class="cta-row">
+          <a class="btn mission-launch" href="#mission-control" id="missionLaunchBtn"><span class="launch-orb" aria-hidden="true">↗</span> Launch Mission Control <span class="launch-caption">LIVE UI DEMO</span></a>
           <a class="btn primary" href="#mission">See how a mission runs</a>
           <a class="btn ghost" href="#research">Read our research</a>
         </div>
@@ -307,17 +347,25 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   <section id="research" aria-labelledby="resTitle">
     <div class="wrap">
       <h2 id="resTitle">Research and publications</h2>
-      <p class="sub">Peer-reviewed work written on the SAADAXA platform.</p>
+      <p class="sub">Research papers written on the SAADAXA platform.</p>
       <div class="papers" id="papersList"></div>
       <div class="patent" id="patentBox"></div>
     </div>
   </section>
 
   <!-- GALLERY -->
+  <section id="achievements" aria-labelledby="achTitle">
+    <div class="wrap">
+      <h2 id="achTitle">Achievements</h2>
+      <p class="sub">Competitions, selections and recognition, with links to the original posts.</p>
+      <div class="ach-list" id="achList"></div>
+    </div>
+  </section>
+
   <section id="gallery" aria-labelledby="galTitle">
     <div class="wrap">
       <h2 id="galTitle">Build and test photos</h2>
-      <p class="sub">Airframe, bench tests and field trials.</p>
+      <p class="sub">Airframe, bench tests, simulation and field trials.</p>
       <div class="gallery" id="galleryGrid"></div>
     </div>
   </section>
@@ -362,9 +410,9 @@ const CONTENT = {
   fullName: "Six-Armed Aerial Disaster Assistance EXpeditionary Apparatus",
   team: "MANTHAN",
   event: "Smart India Hackathon 2026",
-  psId: "SIH26177",
-  psTitle: "A deployable AI-powered autonomous drone that aids search-and-rescue operations by detecting people and hazards, thereby improving responder safety and reducing victim discovery time.",
-  psOrg: "Qualcomm Inc",
+  psId: "SIH26218",
+  psTitle: "Student Innovation: There is a need to design drones and robots that can solve some of the pressing challenges of India such as handling medical emergencies, search and rescue operations, etc.",
+  psOrg: "AICTE",
   institute: "Cambridge Institute of Technology, Bengaluru",
   headline: "Find them. Pin them. Even with no GPS.",
   lede: "An autonomous hexacopter that spots survivors and hazards on board, and turns each one into a map pin with real coordinates, even when GPS and cell towers are down.",
@@ -432,12 +480,12 @@ const CONTENT = {
   ],
 
   papers: [
-    { title: "Power Architecture and Energy Budget Management for a Hexacopter-Based Autonomous Disaster-Response Platform", venue: "IEEE PEDES 2026, IIT Guwahati", status: "" },
-    { title: "Edge-AI-Driven Adaptive Power and Thermal Load Management on a Compute Stack for Autonomous Aerial Systems", venue: "IEEE PEDES 2026, IIT Guwahati", status: "" },
-    { title: "Multi-Channel BLDC Drive Topology and Fault-Tolerant Power Architecture for a Low-Cost Autonomous Hexacopter Platform", venue: "IEEE IICPE 2026, NIT Uttarakhand and MANIT Bhopal", status: "" },
-    { title: "Intelligent Adaptive Power Control and Fault-Response Architecture for an Edge-AI Compute Stack on an Autonomous Aerial Platform", venue: "IEEE UPCON 2026, IIT Kanpur", status: "" },
-    { title: "Directional Gain Enhancement of a Sub-GHz LoRa Link Using a Vivaldi Tapered-Slot Antenna for Infrastructure-Denied UAV Operations", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "" },
-    { title: "Autonomous Dual-Channel Communication with GPS-Anchored SLAM/ENU Coordinate Recovery for Infrastructure-Denied Environments", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "" }
+    { title: "Power Architecture and Energy Budget Management for a Hexacopter-Based Autonomous Disaster-Response Platform", venue: "IEEE PEDES 2026, IIT Guwahati", status: "", link: "" },
+    { title: "Edge-AI-Driven Adaptive Power and Thermal Load Management on a Compute Stack for Autonomous Aerial Systems", venue: "IEEE PEDES 2026, IIT Guwahati", status: "", link: "" },
+    { title: "Multi-Channel BLDC Drive Topology and Fault-Tolerant Power Architecture for a Low-Cost Autonomous Hexacopter Platform", venue: "IEEE IICPE 2026, NIT Uttarakhand and MANIT Bhopal", status: "", link: "" },
+    { title: "Intelligent Adaptive Power Control and Fault-Response Architecture for an Edge-AI Compute Stack on an Autonomous Aerial Platform", venue: "IEEE UPCON 2026, IIT Kanpur", status: "", link: "" },
+    { title: "Directional Gain Enhancement of a Sub-GHz LoRa Link Using a Vivaldi Tapered-Slot Antenna for Infrastructure-Denied UAV Operations", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "", link: "" },
+    { title: "Autonomous Dual-Channel Communication with GPS-Anchored SLAM/ENU Coordinate Recovery for Infrastructure-Denied Environments", venue: "DRDO–IEEE WiCOMM 2026, DEAL", status: "", link: "" }
   ],
 
   patent: {
@@ -445,6 +493,23 @@ const CONTENT = {
     note: "Indian patent application",   // e.g. "Indian patent application No. 2026XXXXXXXX, filed March 2026"
   },
 
+  /* ACHIEVEMENTS: newest first. Replace each title/text with what the post is about.
+     date format: "YYYY-MM-DD" (leave "" if unsure). link: the post URL. */
+  achievements: [
+    { date: "", title: "Achievement 1 (add title)", text: "", link: "https://lnkd.in/p/gd5EZnJY" },
+    { date: "", title: "Achievement 2 (add title)", text: "", link: "https://lnkd.in/p/gNAvbE7g" },
+    { date: "", title: "Achievement 3 (add title)", text: "", link: "https://lnkd.in/p/gNNGHHQM" },
+    { date: "", title: "Achievement 4 (add title)", text: "", link: "https://lnkd.in/p/gzhRAVpV" },
+    { date: "", title: "Achievement 5 (add title)", text: "", link: "https://lnkd.in/p/g77cvzw5" },
+    { date: "", title: "Achievement 6 (add title)", text: "", link: "https://lnkd.in/p/g5EziTig" }
+  ],
+
+  /* GALLERY: photos and videos are loaded automatically from media/gallery.json
+     (made by the add_media.py script). Anything listed here is shown too.
+     Examples:
+       { type: "image",   src: "media/airframe.jpg", caption: "Airframe" }
+       { type: "video",   src: "media/hover.mp4",    caption: "First hover" }
+       { type: "youtube", id: "dQw4w9WgXcQ",         caption: "Field trial" } */
   gallery: [
     // { src: "cad.png", caption: "CAD model of the hexacopter" }
   ],
@@ -458,7 +523,7 @@ const CONTENT = {
   ],
 
   updates: [
-    { date: "2026-09-30", title: "SIH 2026 idea submitted", text: "Idea PPT for problem statement SIH26177 prepared for the portal." }
+    { date: "2026-09-30", title: "SIH 2026 idea submitted", text: "Idea submitted under problem statement SIH26218 (Student Innovation, Robotics and Drones)." }
   ]
 };
 
@@ -497,13 +562,19 @@ function render(c) {
       <div class="t">${esc(p.title)}</div>
       ${statusLabel[p.status] ? `<span class="status ${p.status}">${statusLabel[p.status]}</span>` : "<span></span>"}
       <div class="v">${esc(p.venue)}</div>
+      ${p.link ? `<a class="pl" href="${esc(p.link)}" target="_blank" rel="noopener">Read paper ↗</a>` : ""}
     </article>`).join("");
 
   $("patentBox").innerHTML = `<b>Patent:</b> ${esc(c.patent.title)}<p>${esc(c.patent.note)}</p>`;
 
-  $("galleryGrid").innerHTML = c.gallery.length
-    ? c.gallery.map(g => `<figure><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"><figcaption>${esc(g.caption)}</figcaption></figure>`).join("")
-    : `<div class="empty">No photos yet. Add images to the <code>gallery</code> list in the content block to show them here.</div>`;
+  renderGallery(c.gallery || []);
+
+  const fmtDate = (d) => d ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
+  $("achList").innerHTML = (c.achievements || []).map(a => `
+    <a class="ach" href="${esc(a.link)}" target="_blank" rel="noopener">
+      <div>${a.date ? `<time datetime="${esc(a.date)}">${esc(fmtDate(a.date))}</time>` : ""}<div class="at">${esc(a.title)}</div>${a.text ? `<div class="ad">${esc(a.text)}</div>` : ""}</div>
+      <span class="go">View post ↗</span>
+    </a>`).join("");
 
   $("teamLine").textContent = `Team ${c.team}, ${c.institute}.`;
   $("teamGrid").innerHTML = c.members.map(m => `
@@ -517,7 +588,27 @@ function render(c) {
   $("footLeft").textContent = `${c.project}: ${c.fullName}`;
   $("footRight").textContent = `Team ${c.team} · ${c.event}`;
 }
+function mediaHTML(g) {
+  const cap = g.caption ? `<figcaption>${esc(g.caption)}</figcaption>` : "";
+  if (g.type === "youtube") {
+    return `<figure class="is-video"><iframe src="https://www.youtube-nocookie.com/embed/${esc(g.id)}" title="${esc(g.caption || "Video")}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>${cap}</figure>`;
+  }
+  if (g.type === "video") {
+    return `<figure class="is-video"><video controls preload="metadata" playsinline ${g.poster ? `poster="${esc(g.poster)}"` : ""}><source src="${esc(g.src)}" type="video/mp4"></video>${cap}</figure>`;
+  }
+  return `<figure><a class="img-link" href="${esc(g.src)}" target="_blank" rel="noopener"><img src="${esc(g.thumb || g.src)}" alt="${esc(g.caption || "SAADAXA photo")}" loading="lazy"></a>${cap}</figure>`;
+}
+function renderGallery(items) {
+  $("galleryGrid").innerHTML = items.length
+    ? items.map(mediaHTML).join("")
+    : `<div class="empty">No photos or videos yet.</div>`;
+}
 render(CONTENT);
+/* load photos/videos listed in media/gallery.json (made by add_media.py) */
+fetch("media/gallery.json", { cache: "no-cache" })
+  .then(r => r.ok ? r.json() : [])
+  .then(list => renderGallery([...(CONTENT.gallery || []), ...(Array.isArray(list) ? list : [])]))
+  .catch(() => {});
 
 /* flight-path length for the draw animation */
 (() => {
@@ -540,5 +631,209 @@ render(CONTENT);
   });
 })();
 </script>
+<saadaxa-mission-control hidden aria-hidden="true" data-theme="dark"></saadaxa-mission-control>
+
+<script>
+(() => {
+  const missionStyles = "\n :host{\n  display:block; color-scheme:dark;\n  --paper:#0A1220; --paper-2:#101D2E; --card:#121F31; --ink:#EDF4FC; --ink-2:#9AADC4;\n  --line:#2A3B52; --grid:#1B2D43; --signal:#FF8065; --hazard:#F06B7B; --safe:#62E0B9; --path:#8DAAFF;\n  --on-signal:#0A1220; --font:\"DM Sans\",\"Inter\",Arial,system-ui,sans-serif; --radius:15px; --radius-sm:7px;\n  --shadow:0 18px 50px rgba(0,0,0,.23); --maxw:1520px;\n}\n:host([data-theme=\"light\"]){\n  color-scheme:light; --paper:#F2F6FA; --paper-2:#E7EEF6; --card:#FFFFFF; --ink:#15253A; --ink-2:#687B92;\n  --line:#D3DEEA; --grid:#DCE6F0; --signal:#E75C3E; --hazard:#B83E50; --safe:#168C73; --path:#4268D5;\n  --on-signal:#FFFFFF; --shadow:0 16px 42px rgba(20,33,61,.07);\n}\n*,*::before,*::after{box-sizing:border-box}\n.mc-shell{scroll-behavior:smooth;scroll-padding-top:76px}\n.mc-shell{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:16px/1.5 var(--font);-webkit-font-smoothing:antialiased;\n  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:48px 48px;background-attachment:fixed}\nbutton,a,input{font:inherit}a{color:inherit}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--signal);outline-offset:3px}\nbutton{cursor:pointer}svg{display:block;max-width:100%}.wrap{width:min(var(--maxw),100% - 40px);margin-inline:auto}\n.topbar{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px)}\n.topbar-inner{display:flex;align-items:center;gap:28px;min-height:68px}.brand{display:flex;align-items:center;gap:11px;flex:none;text-decoration:none;font-size:20px;font-weight:800;letter-spacing:.03em}.brand-mark{width:11px;height:11px;border-radius:3px;background:var(--signal);box-shadow:0 0 0 5px color-mix(in srgb,var(--signal) 15%,transparent);transform:rotate(45deg)}\n.brand small{display:block;margin-top:-4px;color:var(--ink-2);font-size:10px;letter-spacing:.16em;font-weight:650}.nav{display:flex;gap:3px;margin-left:auto;overflow-x:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;padding:9px 11px;border-radius:4px;color:var(--ink-2);font-size:14px;text-decoration:none}.nav a:hover,.nav a.active{color:var(--ink);background:var(--paper-2)}.nav a.active{font-weight:700}.top-actions{display:flex;gap:8px;align-items:center}.icon-btn,.theme-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:7px 11px;background:var(--card);border:1px solid var(--line);border-radius:4px;font-size:13px;white-space:nowrap}.icon-btn svg{width:16px;height:16px}\nmain{padding:28px 0 60px}.eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:9px;color:var(--ink-2);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.eyebrow .slash{color:var(--line)}.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card);font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}.pill.demo{border-color:color-mix(in srgb,var(--signal) 45%,var(--line));color:var(--signal);background:color-mix(in srgb,var(--signal) 7%,var(--card))}.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:12px 0 23px}.page-head h1{margin:10px 0 8px;font-size:clamp(34px,4.5vw,54px);line-height:.98;letter-spacing:-.045em;font-weight:800}.page-head p{max-width:620px;margin:0;color:var(--ink-2);font-size:16px}.head-actions{display:flex;flex-wrap:wrap;gap:9px;flex:none}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid var(--line);border-radius:4px;background:var(--card);font-weight:700;font-size:13px;text-decoration:none;transition:transform .15s,border-color .15s}.btn:hover{transform:translateY(-1px);border-color:var(--ink-2)}.btn.primary{background:var(--signal);border-color:var(--signal);color:var(--on-signal)}.btn svg{width:15px;height:15px}\n.demo-note{display:flex;align-items:center;gap:10px;padding:10px 13px;margin-bottom:18px;border:1px dashed var(--line);border-radius:4px;background:color-mix(in srgb,var(--card) 86%,transparent);color:var(--ink-2);font-size:12px}.demo-note svg{width:16px;height:16px;flex:none;color:var(--signal)}.demo-note strong{color:var(--ink)}\n.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);box-shadow:var(--shadow);margin-bottom:20px}.metric{min-width:0;padding:15px 16px;border-right:1px solid var(--line)}.metric:last-child{border-right:0}.metric-label{display:flex;align-items:center;gap:7px;color:var(--ink-2);font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}.metric-label .tiny-dot{width:7px;height:7px;border-radius:50%;background:var(--safe);box-shadow:0 0 0 3px color-mix(in srgb,var(--safe) 12%,transparent)}.metric-value{display:flex;align-items:baseline;gap:8px;margin-top:7px;font-size:20px;font-weight:800;letter-spacing:-.035em;white-space:nowrap}.metric-value small{font-size:11px;color:var(--ink-2);font-weight:550;letter-spacing:0}.metric-value .lost{color:var(--signal)}.battery-track{height:5px;margin-top:8px;overflow:hidden;border-radius:20px;background:var(--paper-2)}.battery-track span{display:block;width:78%;height:100%;background:var(--safe);border-radius:20px}\n.dashboard{display:grid;grid-template-columns:minmax(0,1fr) 330px;align-items:start;gap:18px}.panel{min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;border-bottom:1px solid var(--line)}.panel-heading{min-width:0}.panel-heading h2,.panel-heading h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.015em}.panel-heading p{margin:3px 0 0;color:var(--ink-2);font-size:12px}.section-index{color:var(--ink-2);font-size:10px;font-weight:750;letter-spacing:.12em}.map-top-right{display:flex;align-items:center;gap:8px}.live-label{display:inline-flex;align-items:center;gap:6px;color:var(--safe);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.live-label::before{content:\"\";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,var(--safe) 13%,transparent)}\n.map-stage{position:relative;overflow:hidden;background:var(--paper);isolation:isolate}.map-stage::after{content:\"\";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(color-mix(in srgb,var(--grid) 60%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--grid) 60%,transparent) 1px,transparent 1px);background-size:28px 28px}.map-svg{width:100%;height:auto;max-height:610px;min-height:360px}.map-svg text{font-family:var(--font);user-select:none}.map-svg .flight{stroke-dasharray:14 7;animation:flight-trace 14s linear infinite}.map-svg .safe-route{stroke-dasharray:9 9;animation:safe-trace 15s linear infinite}.map-svg .pin .pin-core{transform-box:fill-box;transform-origin:center;animation:pin-pulse 2.8s ease-in-out infinite}.map-svg .pin.is-selected .pin-core{animation:pin-pulse .7s ease-in-out infinite}.map-svg .pin{cursor:pointer}.map-svg .pin:focus{outline:none;filter:drop-shadow(0 0 6px var(--signal))}.map-svg [data-map-layer].layer-hidden{display:none}.map-controls{position:absolute;top:13px;right:13px;display:grid;gap:6px}.map-control{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:4px;background:color-mix(in srgb,var(--card) 92%,transparent);box-shadow:0 3px 10px rgba(20,33,61,.07)}.map-control svg{width:16px;height:16px}.map-scale{position:absolute;left:15px;bottom:14px;display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.scale-bar{width:44px;height:7px;border:1px solid var(--ink-2);border-top:0}.map-coords{position:absolute;right:14px;bottom:12px;padding:5px 7px;border:1px solid var(--line);border-radius:3px;background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink-2);font:10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace}.map-tooltip{position:absolute;left:50%;top:13px;transform:translateX(-50%);max-width:calc(100% - 120px);padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--card);font-size:11px;font-weight:650;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .18s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.map-tooltip.show{opacity:1}.map-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:12px 16px;border-top:1px solid var(--line)}.layer-toggle{display:inline-flex;align-items:center;gap:7px;padding:4px 0;border:0;background:transparent;color:var(--ink-2);font-size:12px}.layer-toggle .swatch{width:10px;height:10px;border-radius:3px;background:var(--layer-color);outline:1px solid color-mix(in srgb,var(--layer-color) 60%,transparent);outline-offset:1px}.layer-toggle[aria-pressed=\"false\"]{opacity:.44;text-decoration:line-through}.layer-toggle:focus-visible{outline-offset:1px}.map-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 16px;border-top:1px solid var(--line);background:var(--paper-2);color:var(--ink-2);font-size:11px}.map-foot strong{color:var(--ink)}.map-foot .coordinate{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}\n.side-stack{display:grid;gap:18px}.side-body{padding:15px 16px}.mission-status{display:flex;align-items:flex-start;gap:11px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}.status-icon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:5px;background:color-mix(in srgb,var(--safe) 13%,var(--card));color:var(--safe)}.status-icon svg{width:18px;height:18px}.mission-status strong{display:block;font-size:13px}.mission-status p{margin:3px 0 0;color:var(--ink-2);font-size:11px}.status-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}.status-row:last-child{border-bottom:0;padding-bottom:0}.status-row span{color:var(--ink-2)}.status-row strong{text-align:right;font-weight:700}.status-row .orange{color:var(--signal)}\n.detection-list{display:grid;gap:9px}.detection{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--card);text-align:left;transition:border-color .15s,background .15s}.detection:hover,.detection.selected{border-color:var(--signal);background:color-mix(in srgb,var(--signal) 5%,var(--card))}.det-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:5px;background:color-mix(in srgb,var(--signal) 11%,var(--card));color:var(--signal)}.det-icon.hazard{background:color-mix(in srgb,var(--hazard) 12%,var(--card));color:var(--hazard)}.det-icon svg{width:19px;height:19px}.det-name{display:block;font-size:12px;font-weight:800}.det-meta{display:block;margin-top:2px;color:var(--ink-2);font-size:10px}.det-confidence{align-self:start;padding-top:2px;text-align:right;font-size:11px;font-weight:800}.det-confidence small{display:block;color:var(--ink-2);font-size:9px;font-weight:550}.empty-note{margin:2px 0 0;color:var(--ink-2);font-size:11px}\n.anchor-box{padding:13px;border:1px dashed var(--line);border-radius:6px;background:var(--paper)}.anchor-tag{display:flex;align-items:center;gap:6px;color:var(--safe);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.anchor-tag svg{width:13px;height:13px}.anchor-coord{margin:7px 0 4px;font:700 17px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.04em}.anchor-sub{color:var(--ink-2);font-size:10px}.confidence-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;font-size:10px}.confidence-line span{color:var(--ink-2)}.confidence-line strong{font-size:11px}.confidence-track{height:4px;margin-top:6px;background:var(--paper-2);border-radius:8px;overflow:hidden}.confidence-track span{display:block;width:94%;height:100%;background:var(--safe)}\n.activity-list{display:grid;gap:0}.activity{display:grid;grid-template-columns:44px 10px 1fr;gap:8px;align-items:start;padding:0 0 14px}.activity:last-child{padding-bottom:0}.activity time{padding-top:1px;color:var(--ink-2);font:10px ui-monospace,SFMono-Regular,Consolas,monospace}.activity-mark{position:relative;display:grid;place-items:center;width:10px;height:10px;margin-top:4px;border:2px solid var(--path);border-radius:50%;background:var(--card)}.activity:not(:last-child) .activity-mark::after{position:absolute;top:8px;left:2px;width:2px;height:38px;background:var(--line);content:\"\"}.activity-mark.orange{border-color:var(--signal)}.activity-mark.green{border-color:var(--safe)}.activity strong{display:block;font-size:11px}.activity p{margin:2px 0 0;color:var(--ink-2);font-size:10px;line-height:1.45}\n.replay-panel{margin-top:18px}.replay-controls{display:flex;align-items:center;gap:12px;padding:12px 16px}.replay-play{display:grid;place-items:center;flex:none;width:34px;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--paper)}.replay-play svg{width:15px;height:15px}.range-wrap{flex:1;min-width:0}.range-labels{display:flex;justify-content:space-between;gap:10px;color:var(--ink-2);font-size:10px}.range-labels strong{color:var(--ink)}input[type=range]{display:block;width:100%;margin:8px 0 0;accent-color:var(--path);cursor:pointer}.replay-speed{padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--card);font-size:11px}\nfooter{padding:18px 0 28px;border-top:1px solid var(--line);color:var(--ink-2);font-size:11px}footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}footer strong{color:var(--ink)}.toast{position:fixed;right:22px;bottom:22px;z-index:50;max-width:calc(100% - 44px);padding:11px 15px;border:1px solid var(--line);border-radius:5px;background:var(--card);box-shadow:var(--shadow);font-size:12px;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:none}\n@keyframes flight-trace{to{stroke-dashoffset:-210}}@keyframes safe-trace{to{stroke-dashoffset:-180}}@keyframes pin-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}\n@media(max-width:1120px){.dashboard{grid-template-columns:minmax(0,1fr) 300px}.metric{padding:13px 11px}.metric-value{font-size:17px}.nav a{padding:8px}}\n@media(max-width:900px){.wrap{width:min(var(--maxw),100% - 28px)}.topbar-inner{gap:14px;min-height:62px}.nav a:not(.active){display:none}.nav{margin-left:auto}.top-actions{margin-left:0}.top-actions .theme-btn{font-size:0;width:38px;padding:7px}.top-actions .theme-btn::first-letter{font-size:13px}.dashboard{grid-template-columns:minmax(0,1fr)}.side-stack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.side-stack .panel:last-child{grid-column:1/-1}.metrics{grid-template-columns:repeat(5,minmax(0,1fr))}.metric-label{font-size:9px}.metric-value{font-size:16px}.page-head{align-items:flex-start}.page-head p{max-width:540px}}\n@media(max-width:600px){.mc-shell{font-size:15px}.wrap{width:calc(100% - 22px)}main{padding-top:20px}.topbar-inner{gap:10px;min-height:58px}.brand{font-size:17px}.brand small{font-size:9px}.nav a.active{font-size:12px;padding:8px}.top-actions{gap:5px}.top-actions .icon-btn{width:36px;min-width:36px;padding:7px;font-size:0}.top-actions .icon-btn svg{width:17px;height:17px}.page-head{display:block;padding-bottom:18px}.page-head h1{font-size:38px}.page-head p{font-size:14px}.head-actions{margin-top:16px}.head-actions .btn{flex:1;font-size:12px;padding:9px 10px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px;border-bottom:1px solid var(--line)}.metric:nth-child(2n){border-right:0}.metric:nth-child(3){border-bottom:1px solid var(--line)}.metric:last-child{grid-column:1/-1;border-bottom:0}.metric-value{font-size:18px}.metric:last-child .metric-value{display:flex}.metric-label{font-size:9px}.dashboard{gap:12px}.side-stack{grid-template-columns:minmax(0,1fr);gap:12px}.side-stack .panel:last-child{grid-column:auto}.map-svg{min-height:280px}.panel-head{padding:12px}.panel-heading h2{font-size:13px}.map-top-right .pill{font-size:9px}.map-legend{gap:8px 14px;padding:10px 12px}.layer-toggle{font-size:11px}.map-foot{align-items:flex-start;flex-direction:column;gap:4px}.map-coords{font-size:9px}.map-tooltip{top:8px}.replay-controls{gap:9px;padding:10px}.replay-speed{display:none}.demo-note{align-items:flex-start;font-size:11px}footer .wrap{display:block}footer .wrap span{display:block;margin:3px 0}}\n@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}\n\n/* SAADAXA command-centre visual pass */\n.mc-shell{min-height:100vh;background-color:var(--paper);background-image:radial-gradient(ellipse at 8% 0%,color-mix(in srgb,var(--path) 13%,transparent),transparent 34%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:auto,48px 48px,48px 48px;background-attachment:fixed}\n.mc-shell h1,.mc-shell h2,.mc-shell h3,.mc-shell .brand,.mc-shell .metric-value,.mc-shell .anchor-coord{font-family:\"Space Grotesk\",\"DM Sans\",Arial,sans-serif}\n.mc-shell .topbar{background:color-mix(in srgb,var(--paper) 84%,transparent);border-bottom-color:color-mix(in srgb,var(--line) 76%,transparent)}\n.mc-shell .topbar-inner{min-height:72px}\n.mc-shell .brand-mark{border-radius:4px;box-shadow:0 0 0 5px color-mix(in srgb,var(--signal) 12%,transparent),0 0 24px color-mix(in srgb,var(--signal) 32%,transparent)}\n.mc-shell .page-head h1{font-size:clamp(38px,4.7vw,60px);letter-spacing:-.055em}\n.mc-shell .page-head h1 span{color:var(--safe)!important}\n.mc-shell .metrics,.mc-shell .panel{background:linear-gradient(145deg,color-mix(in srgb,var(--card) 96%,var(--path) 4%),var(--card));border-color:color-mix(in srgb,var(--line) 90%,transparent)}\n.mc-shell .panel{box-shadow:0 16px 44px rgba(0,0,0,.14)}\n.mc-shell .demo-note{border-style:solid;background:color-mix(in srgb,var(--signal) 5%,var(--card))}\n.mc-shell .btn.primary{background:linear-gradient(135deg,var(--safe),#45BEA4);border-color:var(--safe);color:#081721;box-shadow:0 7px 22px color-mix(in srgb,var(--safe) 18%,transparent)}\n.mc-shell .btn.primary:hover{filter:brightness(1.06);border-color:var(--safe)}\n.mc-shell .live-label{color:var(--safe)}\n.mc-shell .map-stage{background:var(--paper)}\n.mc-shell .map-svg{filter:drop-shadow(0 8px 18px rgba(0,0,0,.04))}\n.mc-shell .metric-label{letter-spacing:.14em}\n.mc-shell .section-index{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}\n.mc-shell .icon-btn,.mc-shell .theme-btn,.mc-shell .map-control{transition:transform .16s ease,border-color .16s ease,background .16s ease}\n.mc-shell .icon-btn:hover,.mc-shell .theme-btn:hover,.mc-shell .map-control:hover{transform:translateY(-1px);border-color:var(--safe)}\n.mc-shell .status-row strong,.mc-shell .det-confidence{font-variant-numeric:tabular-nums}\n@media(max-width:600px){.mc-shell .topbar-inner{min-height:58px}.mc-shell .page-head h1{font-size:38px}}\n";
+  const missionMarkup = "<header class=\"topbar\">\n  <div class=\"wrap topbar-inner\">\n    <a class=\"brand\" href=\"#back-home\" data-home-target=\"top\" aria-label=\"SAADAXA home\"><span class=\"brand-mark\" aria-hidden=\"true\"></span><span>SAADAXA<small>TEAM MANTHAN \u00b7 SIH 2026</small></span></a>\n    <nav class=\"nav\" aria-label=\"Main navigation\">\n      <a href=\"#back-home\" data-home-target=\"top\">Overview</a><a href=\"#back-home\" data-home-target=\"mission\">How it works</a><a class=\"active\" href=\"#mission-control\" aria-current=\"page\">Mission Control</a><a href=\"#back-home\" data-home-target=\"tech\">Technology</a>\n    </nav>\n    <div class=\"top-actions\">\n      <button class=\"icon-btn back-home\" id=\"backHomeBtn\" type=\"button\" aria-label=\"Back to SAADAXA website\" title=\"Back to SAADAXA website\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"m14 6-6 6 6 6M8 12h12\"/></svg><span>Back to site</span></button>\n      <button class=\"icon-btn\" id=\"exportBtn\" type=\"button\" aria-label=\"Export sample mission report\" title=\"Export sample mission report\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4\"/></svg><span>Export</span></button>\n      <button class=\"theme-btn\" id=\"themeBtn\" type=\"button\" aria-label=\"Switch colour theme\" title=\"Switch theme\">\u25d0</button>\n    </div>\n  </div>\n</header>\n<main class=\"wrap\">\n  <div class=\"page-head\">\n    <div>\n      <div class=\"eyebrow\"><span>Field operations</span><span class=\"slash\">/</span><span>Mission 002</span><span class=\"pill demo\"><span class=\"dot\"></span>Demo mode</span></div>\n      <h1>Mission Control<span style=\"color:var(--signal)\">.</span></h1>\n      <p>A GPS-denied search mission, visualized from the first sweep to rescue hand-off.</p>\n    </div>\n    <div class=\"head-actions\">\n      <button class=\"btn\" id=\"replayTop\" type=\"button\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M3 11a9 9 0 1 1 2.6 6.4M3 4v7h7\"/><path d=\"M12 7v5l3 2\"/></svg>Replay mission</button>\n      <a class=\"btn primary\" href=\"#back-home\" data-home-target=\"mission\">Mission workflow <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></a>\n    </div>\n  </div>\n  <div class=\"demo-note\" role=\"note\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 11v5m0-8h.01\"/></svg><span><strong>Frontend concept \u2014 sample telemetry.</strong> Map markers, link status, coordinates and mission events are illustrative demo data. This page is not connected to a real drone or backend.</span></div>\n\n  <section class=\"metrics\" aria-label=\"Mission telemetry summary\">\n    <div class=\"metric\"><div class=\"metric-label\"><span class=\"tiny-dot\"></span>Flight state</div><div class=\"metric-value\" id=\"flightState\">Searching <small>Auto</small></div></div>\n    <div class=\"metric\"><div class=\"metric-label\">GPS status</div><div class=\"metric-value\"><span class=\"lost\">Lost</span><small>GNSS</small></div></div>\n    <div class=\"metric\"><div class=\"metric-label\">Navigation</div><div class=\"metric-value\">SLAM <small>Anchored</small></div></div>\n    <div class=\"metric\"><div class=\"metric-label\">Backup link</div><div class=\"metric-value\">LoRa <small>Standby</small></div></div>\n    <div class=\"metric\"><div class=\"metric-label\">Battery remaining</div><div class=\"metric-value\">78% <small>6S LiPo</small></div><div class=\"battery-track\" aria-label=\"Battery 78 percent\"><span></span></div></div>\n  </section>\n\n  <div class=\"dashboard\">\n    <div class=\"main-column\">\n      <section class=\"panel map-panel\" aria-labelledby=\"mapTitle\">\n        <div class=\"panel-head\">\n          <div class=\"panel-heading\"><h2 id=\"mapTitle\">Search sector / A-04</h2><p>Anchored local frame \u00b7 Survey grid 01</p></div>\n          <div class=\"map-top-right\"><span class=\"live-label\">Replay ready</span><span class=\"pill\">2.4 ha</span></div>\n        </div>\n        <div class=\"map-stage\" id=\"mapStage\">\n          <svg class=\"map-svg\" id=\"missionMap\" viewBox=\"0 0 900 550\" role=\"img\" aria-label=\"Illustrative search map showing an autonomous flight path, three survivor detections, a hazard zone, a safe route and the GPS-denied search boundary.\">\n            <defs>\n              <pattern id=\"smallGrid\" width=\"30\" height=\"30\" patternUnits=\"userSpaceOnUse\"><path d=\"M30 0H0V30\" fill=\"none\" stroke=\"var(--grid)\" stroke-width=\".7\" opacity=\".75\"/></pattern>\n              <pattern id=\"largeGrid\" width=\"150\" height=\"150\" patternUnits=\"userSpaceOnUse\"><rect width=\"150\" height=\"150\" fill=\"url(#smallGrid)\"/><path d=\"M150 0H0V150\" fill=\"none\" stroke=\"var(--line)\" stroke-width=\"1\" opacity=\".7\"/></pattern>\n              <filter id=\"pinShadow\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\"><feDropShadow dx=\"0\" dy=\"3\" stdDeviation=\"3\" flood-color=\"#14213D\" flood-opacity=\".14\"/></filter>\n            </defs>\n            <rect width=\"900\" height=\"550\" fill=\"var(--paper)\"/>\n            <rect width=\"900\" height=\"550\" fill=\"url(#largeGrid)\"/>\n            <g fill=\"none\" stroke=\"var(--line)\" stroke-width=\"1.4\" opacity=\".75\">\n              <path d=\"M-25 97C107 46 203 133 350 96S590 34 730 86s156 14 204-10\"/>\n              <path d=\"M-30 133C100 82 224 168 355 133S585 75 726 122s157 18 207-4\"/>\n              <path d=\"M-20 377C115 335 225 406 357 370S600 305 722 355s149 8 207-5\"/>\n              <path d=\"M-20 416C108 374 226 446 361 410S600 345 723 394s153 13 207 0\"/>\n              <path d=\"M40 500C155 463 260 513 394 481S615 425 745 469s107 3 166-7\"/>\n            </g>\n            <g fill=\"var(--ink-2)\" font-size=\"10\" opacity=\".85\"><text x=\"43\" y=\"34\" letter-spacing=\"1.8\">LOCAL SURVEY FRAME \u00b7 ENU</text><text x=\"770\" y=\"34\" letter-spacing=\"1.8\">N \u2191</text></g>\n            <g stroke=\"var(--ink-2)\" stroke-width=\"1.3\" opacity=\".8\"><path d=\"M817 51V80m-5-7 5-7 5 7\" fill=\"none\"/><circle cx=\"817\" cy=\"92\" r=\"2\" fill=\"var(--ink-2)\"/></g>\n            <g data-map-layer=\"boundary\">\n              <polygon points=\"112,82 758,61 797,451 135,477\" fill=\"color-mix(in srgb,var(--path) 6%,var(--card))\" stroke=\"var(--ink)\" stroke-width=\"2\" stroke-dasharray=\"8 8\"/>\n              <text x=\"140\" y=\"104\" fill=\"var(--ink-2)\" font-size=\"10\" letter-spacing=\"1.5\">SEARCH BOUNDARY</text>\n            </g>\n            <g data-map-layer=\"flight\">\n              <path id=\"flightPath\" class=\"flight\" d=\"M156 137H722V190H156V247H722V300H156V357H722V410H156\" fill=\"none\" stroke=\"var(--path)\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n              <g fill=\"var(--path)\"><circle cx=\"156\" cy=\"137\" r=\"5\"/><circle cx=\"156\" cy=\"410\" r=\"5\"/><circle cx=\"722\" cy=\"137\" r=\"5\"/></g>\n              <g fill=\"var(--path)\" font-size=\"10\" font-weight=\"700\"><text x=\"176\" y=\"126\">SWEEP 01</text><text x=\"520\" y=\"180\">SWEEP 02</text><text x=\"176\" y=\"289\">SWEEP 03</text><text x=\"520\" y=\"400\">SWEEP 04</text></g>\n            </g>\n            <g data-map-layer=\"hazard\">\n              <polygon points=\"477,219 584,192 622,267 566,316 456,281\" fill=\"color-mix(in srgb,var(--hazard) 23%,transparent)\" stroke=\"var(--hazard)\" stroke-width=\"2.5\"/>\n              <path d=\"M493 235l90 45m-85-32 80 31\" stroke=\"var(--hazard)\" stroke-width=\"1.5\" opacity=\".6\"/>\n              <rect x=\"488\" y=\"201\" width=\"90\" height=\"20\" rx=\"3\" fill=\"var(--card)\" stroke=\"var(--hazard)\"/>\n              <text x=\"499\" y=\"215\" fill=\"var(--hazard)\" font-size=\"10\" font-weight=\"800\" letter-spacing=\".6\">HZ-01 \u00b7 DEBRIS</text>\n            </g>\n            <g data-map-layer=\"safe\">\n              <path class=\"safe-route\" d=\"M68 505L215 419 312 393 415 398 528 415 674 420\" fill=\"none\" stroke=\"var(--safe)\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n              <circle cx=\"68\" cy=\"505\" r=\"8\" fill=\"var(--safe)\" stroke=\"var(--card)\" stroke-width=\"3\"/>\n              <rect x=\"79\" y=\"482\" width=\"90\" height=\"20\" rx=\"3\" fill=\"var(--card)\" stroke=\"var(--safe)\"/>\n              <text x=\"89\" y=\"496\" fill=\"var(--safe)\" font-size=\"10\" font-weight=\"800\" letter-spacing=\".6\">TEAM ENTRY</text>\n              <circle cx=\"674\" cy=\"420\" r=\"7\" fill=\"var(--card)\" stroke=\"var(--safe)\" stroke-width=\"3\"/>\n            </g>\n            <g data-map-layer=\"survivors\" class=\"survivor-layer\">\n              <g class=\"pin\" id=\"pin-survivor-1\" tabindex=\"0\" role=\"button\" aria-label=\"Focus survivor 01\" data-detection=\"survivor-1\" transform=\"translate(305 152)\" filter=\"url(#pinShadow)\">\n                <path class=\"pin-core\" d=\"M0 24C-5 17-20 1-20-10a20 20 0 1 1 40 0C20 1 5 17 0 24Z\" fill=\"var(--signal)\"/><circle cy=\"-10\" r=\"6.5\" fill=\"var(--card)\"/><text x=\"0\" y=\"-37\" text-anchor=\"middle\" fill=\"var(--ink)\" font-size=\"11\" font-weight=\"800\">S-01</text>\n              </g>\n              <g class=\"pin\" id=\"pin-survivor-2\" tabindex=\"0\" role=\"button\" aria-label=\"Focus survivor 02\" data-detection=\"survivor-2\" transform=\"translate(675 260)\" filter=\"url(#pinShadow)\">\n                <path class=\"pin-core\" d=\"M0 24C-5 17-20 1-20-10a20 20 0 1 1 40 0C20 1 5 17 0 24Z\" fill=\"var(--signal)\"/><circle cy=\"-10\" r=\"6.5\" fill=\"var(--card)\"/><text x=\"0\" y=\"-37\" text-anchor=\"middle\" fill=\"var(--ink)\" font-size=\"11\" font-weight=\"800\">S-02</text>\n              </g>\n              <g class=\"pin\" id=\"pin-survivor-3\" tabindex=\"0\" role=\"button\" aria-label=\"Focus survivor 03\" data-detection=\"survivor-3\" transform=\"translate(678 396)\" filter=\"url(#pinShadow)\">\n                <path class=\"pin-core\" d=\"M0 24C-5 17-20 1-20-10a20 20 0 1 1 40 0C20 1 5 17 0 24Z\" fill=\"var(--signal)\"/><circle cy=\"-10\" r=\"6.5\" fill=\"var(--card)\"/><text x=\"0\" y=\"-37\" text-anchor=\"middle\" fill=\"var(--ink)\" font-size=\"11\" font-weight=\"800\">S-03</text>\n              </g>\n            </g>\n            <g data-map-layer=\"anchor\">\n              <circle cx=\"156\" cy=\"137\" r=\"20\" fill=\"none\" stroke=\"var(--path)\" stroke-width=\"1.5\" stroke-dasharray=\"4 5\" opacity=\".8\"/>\n              <path d=\"M144 137h24m-12-12v24\" stroke=\"var(--path)\" stroke-width=\"1.5\"/>\n              <rect x=\"174\" y=\"145\" width=\"128\" height=\"29\" rx=\"3\" fill=\"var(--card)\" stroke=\"var(--line)\"/>\n              <text x=\"184\" y=\"157\" fill=\"var(--ink-2)\" font-size=\"8.5\" letter-spacing=\".6\">LAST GNSS FIX</text><text x=\"184\" y=\"168\" fill=\"var(--ink)\" font-size=\"10\" font-weight=\"800\">ANCHOR 01</text>\n            </g>\n            <g fill=\"var(--ink-2)\" font-size=\"9\" opacity=\".8\"><text x=\"96\" y=\"530\">ENTRY VECTOR</text><text x=\"713\" y=\"504\">GRID A-04</text><text x=\"742\" y=\"533\">SCALE NOT TO SURVEY</text></g>\n          </svg>\n          <div class=\"map-controls\" aria-label=\"Map controls\">\n            <button class=\"map-control\" id=\"zoomIn\" type=\"button\" aria-label=\"Zoom in\" title=\"Zoom in\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 5v14M5 12h14\"/></svg></button>\n            <button class=\"map-control\" id=\"zoomOut\" type=\"button\" aria-label=\"Zoom out\" title=\"Zoom out\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M5 12h14\"/></svg></button>\n            <button class=\"map-control\" id=\"recenter\" type=\"button\" aria-label=\"Recenter map\" title=\"Recenter map\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><circle cx=\"12\" cy=\"12\" r=\"7\"/><path d=\"M12 2v5m0 10v5M2 12h5m10 0h5\"/></svg></button>\n          </div>\n          <div class=\"map-tooltip\" id=\"mapTooltip\" aria-live=\"polite\"></div>\n          <div class=\"map-scale\"><span class=\"scale-bar\"></span><span>Survey frame \u00b7 demo</span></div>\n          <div class=\"map-coords\" id=\"mapCoords\">X 042.81 \u00b7 Y 018.26 \u00b7 Z 032.0 m</div>\n        </div>\n        <div class=\"map-legend\" aria-label=\"Map layers\">\n          <button class=\"layer-toggle\" type=\"button\" data-layer-toggle=\"flight\" aria-pressed=\"true\"><i class=\"swatch\" style=\"--layer-color:var(--path)\"></i>Flight path</button>\n          <button class=\"layer-toggle\" type=\"button\" data-layer-toggle=\"survivors\" aria-pressed=\"true\"><i class=\"swatch\" style=\"--layer-color:var(--signal)\"></i>Survivors (3)</button>\n          <button class=\"layer-toggle\" type=\"button\" data-layer-toggle=\"hazard\" aria-pressed=\"true\"><i class=\"swatch\" style=\"--layer-color:var(--hazard)\"></i>Hazard zone</button>\n          <button class=\"layer-toggle\" type=\"button\" data-layer-toggle=\"safe\" aria-pressed=\"true\"><i class=\"swatch\" style=\"--layer-color:var(--safe)\"></i>Safe route</button>\n          <button class=\"layer-toggle\" type=\"button\" data-layer-toggle=\"boundary\" aria-pressed=\"true\"><i class=\"swatch\" style=\"--layer-color:var(--ink)\"></i>Search boundary</button>\n        </div>\n        <div class=\"map-foot\"><span><strong>Navigation:</strong> GPS-denied \u00b7 visual-inertial SLAM</span><span class=\"coordinate\">FRAME: ENU / ANCHOR 01</span></div>\n      </section>\n\n      <section class=\"panel replay-panel\" aria-labelledby=\"replayTitle\">\n        <div class=\"panel-head\"><div class=\"panel-heading\"><h2 id=\"replayTitle\">Mission replay</h2><p>Scrub through the sample mission timeline</p></div><span class=\"section-index\">01 \u2014 18 MIN</span></div>\n        <div class=\"replay-controls\">\n          <button class=\"replay-play\" id=\"playPause\" type=\"button\" aria-label=\"Pause route animation\" title=\"Pause or resume route animation\"><svg id=\"playIcon\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 5h4v14H7zM15 5h4v14h-4z\"/></svg></button>\n          <div class=\"range-wrap\"><div class=\"range-labels\"><span>00:00 \u00b7 Launch</span><strong id=\"timelineValue\">09:42 \u00b7 SLAM anchor</strong><span>18:00 \u00b7 Report</span></div><input id=\"timeline\" type=\"range\" min=\"0\" max=\"1080\" step=\"6\" value=\"582\" aria-label=\"Mission timeline position\"></div>\n          <select id=\"replaySpeed\" class=\"replay-speed\" aria-label=\"Replay speed\"><option value=\"1\">1\u00d7 speed</option><option value=\"1.5\">1.5\u00d7 speed</option><option value=\"2\">2\u00d7 speed</option></select>\n        </div>\n      </section>\n    </div>\n\n    <aside class=\"side-stack\" aria-label=\"Mission details\">\n      <section class=\"panel\" aria-labelledby=\"snapshotTitle\">\n        <div class=\"panel-head\"><div class=\"panel-heading\"><h2 id=\"snapshotTitle\">Mission snapshot</h2><p>Aircraft and link telemetry</p></div><span class=\"section-index\">M-002</span></div>\n        <div class=\"side-body\">\n          <div class=\"mission-status\"><div class=\"status-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><path d=\"M12 3 4.5 7v5.5c0 4 3 6.8 7.5 8.5 4.5-1.7 7.5-4.5 7.5-8.5V7L12 3Z\"/><path d=\"m8.5 12 2.2 2.2 4.8-5\"/></svg></div><div><strong>Mission stable</strong><p>Autonomous sweep continuing in demo mode.</p></div></div>\n          <div class=\"status-row\"><span>Airframe</span><strong>Hexacopter / 01</strong></div>\n          <div class=\"status-row\"><span>Altitude AGL</span><strong>32.0 m</strong></div>\n          <div class=\"status-row\"><span>Ground speed</span><strong>4.8 m/s</strong></div>\n          <div class=\"status-row\"><span>Primary link</span><strong class=\"orange\">Wi-Fi unavailable</strong></div>\n          <div class=\"status-row\"><span>Telemetry fallback</span><strong>LoRa \u00b7 ready</strong></div>\n        </div>\n      </section>\n\n      <section class=\"panel\" aria-labelledby=\"detectionsTitle\">\n        <div class=\"panel-head\"><div class=\"panel-heading\"><h2 id=\"detectionsTitle\">Detected objects</h2><p>Tap a result to locate it on the map</p></div><span class=\"pill\">03 finds</span></div>\n        <div class=\"side-body\"><div class=\"detection-list\">\n          <button class=\"detection\" type=\"button\" data-focus=\"survivor-1\"><span class=\"det-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><circle cx=\"12\" cy=\"7\" r=\"3\"/><path d=\"M5 20v-2.5a7 7 0 0 1 14 0V20M8 16h8\"/></svg></span><span><span class=\"det-name\">Survivor \u00b7 S-01</span><span class=\"det-meta\">RGB + thermal confirmation</span></span><span class=\"det-confidence\">97%<small>confidence</small></span></button>\n          <button class=\"detection\" type=\"button\" data-focus=\"survivor-2\"><span class=\"det-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><circle cx=\"12\" cy=\"7\" r=\"3\"/><path d=\"M5 20v-2.5a7 7 0 0 1 14 0V20M8 16h8\"/></svg></span><span><span class=\"det-name\">Survivor \u00b7 S-02</span><span class=\"det-meta\">Thermal cross-check complete</span></span><span class=\"det-confidence\">92%<small>confidence</small></span></button>\n          <button class=\"detection\" type=\"button\" data-focus=\"survivor-3\"><span class=\"det-icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"><circle cx=\"12\" cy=\"7\" r=\"3\"/><path d=\"M5 20v-2.5a7 7 0 0 1 14 0V20M8 16h8\"/></svg></span><span><span class=\"det-name\">Survivor \u00b7 S-03</span><span class=\"det-meta\">Position refined by SLAM</span></span><span class=\"det-confidence\">89%<small>confidence</small></span></button>\n        </div><p class=\"empty-note\" style=\"margin-top:12px\">Confidence values are illustrative, not model output.</p></div>\n      </section>\n\n      <section class=\"panel\" aria-labelledby=\"anchorTitle\">\n        <div class=\"panel-head\"><div class=\"panel-heading\"><h2 id=\"anchorTitle\">Coordinate anchor</h2><p>Last known GNSS fix \u2192 local frame</p></div><span class=\"section-index\">ANCHOR 01</span></div>\n        <div class=\"side-body\">\n          <div class=\"anchor-box\"><div class=\"anchor-tag\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-6.5 8-13a8 8 0 1 0-16 0c0 6.5 8 13 8 13Z\"/><circle cx=\"12\" cy=\"9\" r=\"2.5\"/></svg>Position estimate retained</div><div class=\"anchor-coord\">14.62\u00b0 N<br>75.83\u00b0 E</div><div class=\"anchor-sub\">Sample coordinate \u00b7 not live location</div><div class=\"confidence-line\"><span>Anchor confidence</span><strong>94%</strong></div><div class=\"confidence-track\"><span></span></div></div>\n          <div class=\"status-row\"><span>Frame type</span><strong>ENU / local</strong></div><div class=\"status-row\"><span>Anchor age</span><strong>09 min 42 sec</strong></div>\n        </div>\n      </section>\n\n      <section class=\"panel\" aria-labelledby=\"activityTitle\">\n        <div class=\"panel-head\"><div class=\"panel-heading\"><h2 id=\"activityTitle\">Mission activity</h2><p>Recent system events</p></div><span class=\"section-index\">EVENT LOG</span></div>\n        <div class=\"side-body\"><div class=\"activity-list\">\n          <div class=\"activity\"><time>00:00</time><span class=\"activity-mark\"></span><div><strong>Mission initiated</strong><p>Search sector A-04 loaded.</p></div></div>\n          <div class=\"activity\"><time>04:18</time><span class=\"activity-mark orange\"></span><div><strong>GNSS signal lost</strong><p>Navigation handed over to visual-inertial SLAM.</p></div></div>\n          <div class=\"activity\"><time>04:21</time><span class=\"activity-mark green\"></span><div><strong>Local frame anchored</strong><p>Last valid fix retained as Anchor 01.</p></div></div>\n          <div class=\"activity\"><time>09:42</time><span class=\"activity-mark orange\"></span><div><strong>Survivor S-01 confirmed</strong><p>RGB detection cross-checked against thermal input.</p></div></div>\n          <div class=\"activity\"><time>12:06</time><span class=\"activity-mark\"></span><div><strong>Hazard polygon mapped</strong><p>Debris zone added to the rescue map.</p></div></div>\n        </div></div>\n      </section>\n    </aside>\n  </div>\n</main>\n<footer><div class=\"wrap\"><span><strong>SAADAXA</strong> \u00b7 Team MANTHAN \u00b7 SIH 2026</span><span>Mission Control UI concept \u00b7 frontend only \u00b7 sample data</span></div></footer>\n<div id=\"toast\" class=\"toast\" role=\"status\" aria-live=\"polite\"></div>";
+  if (!customElements.get('saadaxa-mission-control')) {
+    customElements.define('saadaxa-mission-control', class extends HTMLElement {
+      connectedCallback() {
+        if (this._ready) return;
+        this._ready = true;
+        if (!this.hasAttribute('data-theme')) this.setAttribute('data-theme', 'dark');
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = '<style>' + missionStyles + '</style><div class="mc-shell">' + missionMarkup + '</div>';
+        const host = this;
+        const $ = (id) => shadow.querySelector('#' + id);
+        const root = host;
+  const themeBtn = $('themeBtn');
+  try {
+    const saved = localStorage.getItem('saadaxa-mission-theme');
+    if (saved === 'dark' || saved === 'light') root.dataset.theme = saved;
+  } catch (_) {}
+  const updateThemeLabel = () => {
+    const dark = root.dataset.theme === 'dark';
+    themeBtn.textContent = dark ? '☼' : '◐';
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    themeBtn.title = dark ? 'Switch to light theme' : 'Switch to dark theme';
+  };
+  updateThemeLabel();
+  themeBtn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('saadaxa-mission-theme', root.dataset.theme); } catch (_) {}
+    updateThemeLabel();
+  });
+
+  const toast = $('toast');
+  let toastTimer;
+  function notify(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // Layer controls only change the front-end map's SVG groups.
+  shadow.querySelectorAll('[data-layer-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+      const layer = button.dataset.layerToggle;
+      const enabled = button.getAttribute('aria-pressed') !== 'true';
+      button.setAttribute('aria-pressed', String(enabled));
+      shadow.querySelectorAll(`[data-map-layer="${layer}"]`).forEach(group => group.classList.toggle('layer-hidden', !enabled));
+      notify(`${layer.charAt(0).toUpperCase() + layer.slice(1)} layer ${enabled ? 'shown' : 'hidden'}`);
+    });
+  });
+
+  // Zoom is implemented by adjusting the SVG viewBox; recenter restores its initial frame.
+  const map = $('missionMap');
+  const base = { x: 0, y: 0, w: 900, h: 550 };
+  let zoom = 1;
+  function applyZoom() {
+    const w = base.w / zoom, h = base.h / zoom;
+    map.setAttribute('viewBox', `${base.x + (base.w-w)/2} ${base.y + (base.h-h)/2} ${w} ${h}`);
+  }
+  $('zoomIn').addEventListener('click', () => { zoom = Math.min(2.0, +(zoom + .15).toFixed(2)); applyZoom(); });
+  $('zoomOut').addEventListener('click', () => { zoom = Math.max(.75, +(zoom - .15).toFixed(2)); applyZoom(); });
+  $('recenter').addEventListener('click', () => { zoom = 1; applyZoom(); notify('Map recentered on Search Sector A-04'); });
+
+  const detectionNames = {
+    'survivor-1': 'Survivor S-01 · 97% confidence',
+    'survivor-2': 'Survivor S-02 · 92% confidence',
+    'survivor-3': 'Survivor S-03 · 89% confidence'
+  };
+  function focusDetection(id) {
+    shadow.querySelectorAll('.detection').forEach(card => card.classList.toggle('selected', card.dataset.focus === id));
+    shadow.querySelectorAll('.pin').forEach(pin => pin.classList.toggle('is-selected', pin.dataset.detection === id));
+    const survivorLayer = shadow.querySelector('[data-map-layer="survivors"]');
+    if (survivorLayer && survivorLayer.classList.contains('layer-hidden')) {
+      survivorLayer.classList.remove('layer-hidden');
+      const toggle = shadow.querySelector('[data-layer-toggle="survivors"]');
+      toggle?.setAttribute('aria-pressed', 'true');
+    }
+    const pin = $(`pin-${id}`);
+    if (pin) {
+      const t = pin.getAttribute('transform').match(/translate\(([-\d.]+)\s+([-\d.]+)\)/);
+      if (t) {
+        const x = Number(t[1]), y = Number(t[2]);
+        const w = base.w / zoom, h = base.h / zoom;
+        map.setAttribute('viewBox', `${x - w/2} ${y - h/2} ${w} ${h}`);
+      }
+    }
+    $('mapTooltip').textContent = detectionNames[id] || 'Detection selected';
+    $('mapTooltip').classList.add('show');
+    $('mapCoords').textContent = id === 'survivor-1' ? 'X 018.34 · Y 026.12 · Z 032.0 m' : id === 'survivor-2' ? 'X 067.10 · Y 041.76 · Z 031.8 m' : 'X 067.45 · Y 067.92 · Z 032.2 m';
+  }
+  shadow.querySelectorAll('[data-focus]').forEach(button => button.addEventListener('click', () => focusDetection(button.dataset.focus)));
+  shadow.querySelectorAll('[data-detection]').forEach(pin => {
+    pin.addEventListener('click', () => focusDetection(pin.dataset.detection));
+    pin.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); focusDetection(pin.dataset.detection); } });
+  });
+
+  let paused = false;
+  const playPause = $('playPause');
+  const playIcon = $('playIcon');
+  function setPaused(value) {
+    paused = value;
+    map.querySelectorAll('.flight,.safe-route,.pin-core').forEach(el => { el.style.animationPlayState = paused ? 'paused' : 'running'; });
+    playIcon.innerHTML = paused ? '<path d="m8 5 11 7-11 7z"/>' : '<path d="M7 5h4v14H7zM15 5h4v14h-4z"/>';
+    playPause.setAttribute('aria-label', paused ? 'Resume route animation' : 'Pause route animation');
+  }
+  playPause.addEventListener('click', () => setPaused(!paused));
+  $('replaySpeed').addEventListener('change', event => {
+    const speed = Number(event.target.value);
+    map.querySelectorAll('.flight').forEach(el => el.style.animationDuration = `${14/speed}s`);
+    map.querySelectorAll('.safe-route').forEach(el => el.style.animationDuration = `${15/speed}s`);
+    notify(`Replay speed set to ${speed}×`);
+  });
+  function replay() {
+    setPaused(false);
+    zoom = 1; applyZoom();
+    $('timeline').value = 0;
+    $('timelineValue').textContent = '00:00 · Mission launch';
+    shadow.querySelectorAll('.pin').forEach(pin => pin.classList.remove('is-selected'));
+    shadow.querySelectorAll('.detection').forEach(card => card.classList.remove('selected'));
+    const tooltip = $('mapTooltip');
+    tooltip.textContent = 'Replaying mission route'; tooltip.classList.add('show');
+    map.querySelectorAll('.flight,.safe-route').forEach(el => {
+      el.style.animation = 'none'; void el.getBoundingClientRect(); el.style.animation = '';
+    });
+    notify('Mission replay restarted · sample data');
+    setTimeout(() => tooltip.classList.remove('show'), 2400);
+  }
+  $('replayTop').addEventListener('click', replay);
+  const timeline = $('timeline');
+  timeline.addEventListener('input', () => {
+    const seconds = Number(timeline.value);
+    const mm = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const ss = (seconds % 60).toString().padStart(2, '0');
+    const event = seconds < 258 ? 'Search grid loaded' : seconds < 261 ? 'GNSS signal lost' : seconds < 582 ? 'SLAM anchored' : seconds < 726 ? 'Survivor S-01 confirmed' : seconds < 900 ? 'Hazard mapped' : 'Report generated';
+    $('timelineValue').textContent = `${mm}:${ss} · ${event}`;
+    $('flightState').innerHTML = `${seconds >= 1080 ? 'Complete' : seconds < 60 ? 'Launching' : 'Searching'} <small>Demo</small>`;
+    $('mapCoords').textContent = `T+ ${mm}:${ss} · Z ${(32 + Math.sin(seconds/180)*.8).toFixed(1)} m · DEMO`;
+  });
+
+  // Generate a local sample report; no server or data connection is used.
+  $('exportBtn').addEventListener('click', () => {
+    const report = [
+      'SAADAXA · MISSION 002 · SAMPLE MISSION REPORT',
+      'Status: Frontend demo data only; not connected to a live aircraft.',
+      'Sector: A-04 | Navigation: GPS-denied visual-inertial SLAM',
+      'GNSS: Lost | Anchor: 01 | Battery: 78% | Altitude: 32.0 m',
+      '', 'DETECTIONS',
+      'S-01, Survivor, confidence 97%, RGB + thermal confirmation',
+      'S-02, Survivor, confidence 92%, thermal cross-check complete',
+      'S-03, Survivor, confidence 89%, position refined by SLAM',
+      'HZ-01, Hazard zone, debris polygon mapped',
+      '', 'NOTE: Coordinates, confidence scores and telemetry are illustrative placeholders.'
+    ].join('\n');
+    const blob = new Blob([report], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'saadaxa-sample-mission-report.txt';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    notify('Sample mission report exported');
+  });
+
+  const requestHome = (target = 'top') => host.dispatchEvent(new CustomEvent('saadaxa-home-request', { detail: { target }, bubbles: true, composed: true }));
+  const backButton = $('backHomeBtn');
+  if (backButton) backButton.addEventListener('click', () => requestHome('top'));
+  shadow.querySelectorAll('[data-home-target]').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      requestHome(link.dataset.homeTarget || 'top');
+    });
+  });
+
+      }
+    });
+  }
+
+  const view = document.querySelector('saadaxa-mission-control');
+  const openMission = (event) => {
+    if (event) event.preventDefault();
+    if (!view) return;
+    view.hidden = false;
+    document.body.classList.add('mission-mode');
+    view.setAttribute('aria-hidden', 'false');
+    try { history.replaceState(null, '', '#mission-control'); } catch (_) {}
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+  const closeMission = (target = 'top') => {
+    if (!view) return;
+    document.body.classList.remove('mission-mode');
+    view.hidden = true;
+    view.setAttribute('aria-hidden', 'true');
+    try { history.replaceState(null, '', target === 'top' ? location.pathname + location.search : '#' + target); } catch (_) {}
+    if (target && target !== 'top') setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  document.querySelectorAll('#missionControlLink, #missionLaunchBtn').forEach(link => link.addEventListener('click', openMission));
+  document.addEventListener('saadaxa-home-request', event => closeMission(event.detail?.target || 'top'));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && document.body.classList.contains('mission-mode')) closeMission('top'); });
+  if (location.hash === '#mission-control') openMission();
+})();
+</script>
+
 </body>
 </html>
